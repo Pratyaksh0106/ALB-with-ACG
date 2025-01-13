@@ -1,63 +1,67 @@
-name: Terraform ci/cd 
+name: Terraform CI/CD
 
 on:
-    push:
-        branches:
-        - main
+  push:
+    branches:
+      - main
 
 jobs:
-    Docker_Image_build_and_push:
-        name: Docker build and push
-        runs-on: ubuntu-latest
-        environment: Docker
+  Docker_Image_build_and_push:
+    name: Docker build and push
+    runs-on: ubuntu-latest
+    environment: Docker
 
-        steps:
-            - name: Checkout the code
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
 
-            - name: Docker login
-              uses: docker/login-action@v2
-              with:
-                username: ${{secrets.DOCKER_USERNAME }}
-                password: ${{secrets.DOCKER_PASSWORD}}
-                
-            # - name: Build Docker image
-            #   run: |
-            #     docker build -t pratyaksh0106/ALBwithASG:latest .
-            
-            # - name: Push Docker image
-            #   run: |
-            #     docker push pratyaksh0106/ALBwithASG:latest
+      - name: Docker login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+        
+      - name: Build Docker image
+        run: |
+          docker build -t pratyaksh0106/ALBwithASG:${{ github.sha }} .
+        
+      - name: Push Docker image
+        run: |
+          docker push pratyaksh0106/ALBwithASG:${{ github.sha }}
 
-    
-    Terraform_code_apply:
-        name: AWS resources build
-        runs-on: ubuntu-latest   
-        environment: Dev
-        needs: Docker_Image_build_and_push
+  Terraform_code_apply:
+    name: AWS resources build
+    runs-on: ubuntu-latest   
+    environment: Dev
+    needs: Docker_Image_build_and_push  # Ensure this job runs after the Docker image is built and pushed
 
-        steps:
-            - name: Checkout the code
-              uses: actions/checkout@v3
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
 
-            - name: AWS setup
-              uses: aws-actions/configure-aws-credentials@v3
-              with:
-                    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: AWS setup
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1 # You can specify the AWS region as needed
 
-            - name: terraform setup
-              uses: hashicorp/setup-terraform@v2
-              with:
-                terraform_version: 1.5.7
+      - name: Terraform setup
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.7
 
-            - name: initialize terraform
-              run: terraform init
-            - name: validation
-              run: terraform validate
-            - name: terraform plan -out=tfplan
-              run: terraform plan
-            - name: terraform apply
-              run: terraform apply -auto-approve -out=tfplan  
-            - name: destroy
-              uses: terraform destroy -auto-approve-out=tfplan
+      - name: Initialize Terraform
+        run: terraform init
+
+      - name: Terraform validate
+        run: terraform validate
+
+      - name: Terraform plan
+        run: terraform plan -out=tfplan
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve tfplan  # Apply the plan
+
+      - name: Terraform destroy
+        run: terraform destroy -auto-approve -target=all  # Adjust this if you want specific targets for destruction
