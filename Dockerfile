@@ -23,15 +23,8 @@ WORKDIR /app
 # Copy your Terraform configuration files (including .tf files)
 COPY . /app
 
-# Install Terraform (if not using hashicorp/terraform image)
-# RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | tee /etc/apt/trusted.gpg.d/hashicorp.asc
-# RUN apt update && apt install terraform
 
 # Initialize Terraform configuration
 RUN terraform init
 
-# Run Terraform plan (optional to check changes before applying)
-RUN terraform plan
 
-# Apply Terraform configuration to create resources (can be triggered manually)
-CMD ["terraform", "apply", "-auto-approve"]
