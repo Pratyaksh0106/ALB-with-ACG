@@ -101,7 +101,7 @@ resource "aws_launch_template" "ec2_launch_template" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "yt-ec2-web-server"
+      Name = "yt-ec2-web-server" 
     }
   }
 }
