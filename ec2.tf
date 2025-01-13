@@ -86,7 +86,7 @@ resource "aws_lb_listener" "alb_listener" {
 
 #3. Launch Template for EC2 Instances
 resource "aws_launch_template" "ec2_launch_template" {
-  name = "yt-web-server"
+  name = "yt-web-server-test"
 
   image_id      = "ami-05576a079321f21f8" //Copy the ami id from aws console
   instance_type = "t2.micro"
