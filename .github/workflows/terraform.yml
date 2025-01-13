@@ -20,20 +20,20 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-        
+
       - name: Build Docker image
         run: |
           docker build -t pratyaksh0106/albwithasg:${{ github.sha }} .
-        
+
       - name: Push Docker image
         run: |
           docker push pratyaksh0106/albwithasg:${{ github.sha }}
 
   Terraform_code_apply:
     name: AWS resources build
-    runs-on: ubuntu-latest   
+    runs-on: ubuntu-latest
     environment: Dev
-    needs: Docker_Image_build_and_push  # Ensure this job runs after the Docker image is built and pushed
+    needs: Docker_Image_build_and_push
 
     steps:
       - name: Checkout the code
@@ -42,10 +42,9 @@ jobs:
       - name: AWS setup
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{secrets.AWS_REGION}} 
-          
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Correct the region here
 
       - name: Terraform setup
         uses: hashicorp/setup-terraform@v2
@@ -62,7 +61,7 @@ jobs:
         run: terraform plan -out=tfplan
 
       - name: Terraform apply
-        run: terraform apply -auto-approve tfplan  # Apply the plan
+        run: terraform apply -auto-approve tfplan
 
       - name: Terraform destroy
-        run: terraform destroy -auto-approve -target=all  # Adjust this if you want specific targets for destruction
+        run: terraform destroy -auto-approve -target=all
