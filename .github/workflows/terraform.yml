@@ -21,9 +21,9 @@ jobs:
                 username: ${{secrets.DOCKER_USERNAME }}
                 password: ${{secrets.DOCKER_PASSWORD}}
                 
-            - name: Build Docker image
-              run: |
-                docker build -t pratyaksh0106/ALBwithASG:latest .
+            # - name: Build Docker image
+            #   run: |
+            #     docker build -t pratyaksh0106/ALBwithASG:latest .
             
             # - name: Push Docker image
             #   run: |
