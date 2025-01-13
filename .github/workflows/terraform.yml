@@ -1,62 +1,61 @@
-name: Terraform CI/CD
+name: Terraform ci/cd 
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    push:
+        branches:
+        - main
 
 jobs:
-  terraform:
-    name: Apply Terraform
-    runs-on: ubuntu-latest
+    Docker_Image_build_and_push:
+        name: Docker build and push
+        runs-on: ubuntu-latest
+        environment: Docker
 
-    steps:
-      # Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v3
+        steps:
+            - name: Checkout the code
+              uses: actions/checkout@v3
 
-      # Set up Terraform CLI
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.7 # Update to your desired Terraform version
+            - name: Docker login
+              uses: docker/login-action@v2
+              with:
+                username: ${{secrets.DOCKER_USERNAME }}
+                password: ${{secrets.DOCKER_PASSWORD}}
+                
+            - name: Build Docker image
+              run: |
+                docker build -t pratyaksh0106/ALBwithASG:latest .
+            
+            - name: Push Docker image
+              run: |
+                docke push pratyaksh0106/ALBwithASG:latest
 
-      # Initialize Terraform
-      - name: Terraform Init
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform init
+    
+    Terraform_code_apply:
+        name: AWS resources build
+        runs-on: ubuntu-latest
+        environment: Dev
+        needs: Docker_Image_build_and_push
 
-      # Validate Terraform configuration
-      - name: Terraform Validate
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform validate
+        steps:
+            - name: Checkout the code
+              uses: actions/checkout@v3
 
-      # Plan Terraform execution
-      - name: Terraform Plan
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform plan -out=tfplan
+            - name: AWS setup
+              uses: aws-actions/configure-aws-credentials@v3
+              with:
+                    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      # Apply Terraform configuration (requires approval for pull requests)
-      - name: Terraform Apply
-        if: github.event_name == 'push'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform apply -auto-approve tfplan
+            - name: terraform setup
+              uses: hashicorp/setup-terraform@v2
+              with:
+                terraform_version: 1.5.7
 
-      - name: Terraform Destroy
-        if: github.event_name == 'push'
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: terraform destroy -auto-approve tfplan
-     
+            - name: initialize terraform
+              run: terraform init
+            - name: validation
+              run: terraform validate
+            - name: terraform plan -out=tfplan
+              run: terraform plan
+            - name: terraform apply
+              run: terraform apply -auto-approve -out=tfplan  

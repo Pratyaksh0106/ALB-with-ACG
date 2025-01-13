@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../terraform-lectures"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}
