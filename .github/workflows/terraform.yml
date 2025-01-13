@@ -7,7 +7,7 @@ on:
 
 jobs:
   Docker_Image_build_and_push:
-    name: Docker build and push
+    name: DEV
     runs-on: ubuntu-latest
     environment: Docker
 
@@ -30,7 +30,7 @@ jobs:
           docker push pratyaksh0106/albwithasg:${{ github.sha }}  
 
   Terraform_code_apply:
-    name: AWS resources build
+    name: Test
     runs-on: ubuntu-latest
     environment: Dev
     needs: Docker_Image_build_and_push
