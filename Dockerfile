@@ -8,14 +8,14 @@ FROM hashicorp/terraform:latest
 # ENV AWS_DEFAULT_REGION=us-east-1
 
 # Install AWS CLI for interacting with AWS services
-RUN apk add --no-cache \
-    bash \
-    curl \
-    unzip \
-    && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
-    && unzip awscliv2.zip \
-    && sudo ./aws/install \
-    && rm -rf awscliv2.zip
+# RUN apk add --no-cache \
+#     bash \
+#     curl \
+#     unzip \
+#     && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+#     && unzip awscliv2.zip \
+#     && sudo ./aws/install \
+#     && rm -rf awscliv2.zip
 
 # Set up the working directory inside the container
 WORKDIR /app
