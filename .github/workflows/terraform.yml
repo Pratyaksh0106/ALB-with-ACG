@@ -32,7 +32,7 @@ jobs:
     
     Terraform_code_apply:
         name: AWS resources build
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-latest   
         environment: Dev
         needs: Docker_Image_build_and_push
 
@@ -59,3 +59,5 @@ jobs:
               run: terraform plan
             - name: terraform apply
               run: terraform apply -auto-approve -out=tfplan  
+            - name: destroy
+              uses: terraform destroy -auto-approve-out=tfplan
