@@ -27,7 +27,7 @@ jobs:
             
             - name: Push Docker image
               run: |
-                docke push pratyaksh0106/ALBwithASG:latest
+                docker push pratyaksh0106/ALBwithASG:latest
 
     
     Terraform_code_apply:
