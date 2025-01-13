@@ -23,11 +23,11 @@ jobs:
         
       - name: Build Docker image
         run: |
-          docker build -t pratyaksh0106/ALBwithASG:${{ github.sha }} .
+          docker build -t pratyaksh0106/albwithasg:${{ github.sha }} .
         
       - name: Push Docker image
         run: |
-          docker push pratyaksh0106/ALBwithASG:${{ github.sha }}
+          docker push pratyaksh0106/albwithasg:${{ github.sha }}
 
   Terraform_code_apply:
     name: AWS resources build
