@@ -60,8 +60,8 @@ jobs:
       - name: Terraform plan
         run: terraform plan -out=tfplan
 
-      - name: Terraform apply
-        run: terraform apply -auto-approve tfplan
+      # - name: Terraform apply
+      #   run: terraform apply -auto-approve tfplan
 
       - name: Terraform destroy
         run: terraform destroy -auto-approve
