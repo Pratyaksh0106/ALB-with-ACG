@@ -22,8 +22,8 @@ resource "aws_security_group" "alb_sg" {
   tags = {
     Name = "yt-alb-sg"
   }
-}
-
+} 
+    
 # Security Group for EC2 Instances (ALB -> EC2)
 resource "aws_security_group" "ec2_sg" {
   name        = "yt-ec2-sg"
